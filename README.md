@@ -14,6 +14,49 @@ Some SSH servers have a limit on the number of authentication attempts (e.g., 6)
 -   Provides a command-line interface (`ssh-agent-sync`) for manual syncing.
 -   Provides a graphical user interface (`ssh-agent-sync-gui`) that runs in the system tray for automatic syncing.
 
+## Key Comment Format
+
+For `ssh-agent-sync` to correctly identify and create `Host` entries, the comment associated with each SSH key in the agent must follow a specific format. The tool supports two formats for the key comment:
+
+> [!NOTE]
+> For Bitwarden users, the "name" of the SSH key is used as the comment.
+
+### Simple `user@host`
+
+The most basic format is `user@host`, with no spaces.
+
+**Example:** `dev@githost.com`
+
+This will generate a single `Host` entry in your SSH configuration:
+
+```ssh-config
+Host githost.com
+    User dev
+    IdentityFile /path/to/your/keys/githost_com.pub
+    IdentitiesOnly yes
+```
+
+### Nickname `<user@host>`
+
+You can also assign a nickname to a key, which is useful for creating aliases for hosts.
+
+**Example:** `My-Server <dev@githost.com>`
+
+This format will generate two `Host` entries: one for the nickname and one for the actual hostname. Any spaces in the nickname will be replaced with underscores.
+
+```ssh-config
+Host My-Server
+    HostName githost.com
+    User dev
+    IdentityFile /path/to/your/keys/My-Server.pub
+    IdentitiesOnly yes
+
+Host githost.com
+    User dev
+    IdentityFile /path/to/your/keys/My-Server.pub
+    IdentitiesOnly yes
+```
+
 ## Binaries
 
 This project provides two binaries:
