@@ -30,7 +30,9 @@ fn process_ssh_comment(comment: &str) -> Option<(String, String, Option<String>)
         }
 
         user_host = extract_chevron_text(&comment)?; // Return None as extraction of <> failed.
-        name = comment.find('<').map(|idx| comment[..idx].to_string());
+        name = comment.find('<').map(|idx| {
+            comment[..idx].trim().replace( " ", "_")
+        });
     }
 
     // exactly one @

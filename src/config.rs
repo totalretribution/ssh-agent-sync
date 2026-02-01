@@ -90,10 +90,12 @@ fn create_config_entry(key: &SshKey, key_folder: &std::path::Path) -> String {
     if let Some(ref name) = key.name {
         config.push_str(&format!("Host {}\n", name));
         config.push_str(&format!("    HostName {}\n", key.host));
-    } else {
-        config.push_str(&format!("Host {}\n", key.host));
+        config.push_str(&format!("    User {}\n", key.user));
+        config.push_str(&format!("    IdentityFile {}\n", key_path.display()));
+        config.push_str("    IdentitiesOnly yes\n\n");
     }
 
+    config.push_str(&format!("Host {}\n", key.host));
     config.push_str(&format!("    User {}\n", key.user));
     config.push_str(&format!("    IdentityFile {}\n", key_path.display()));
     config.push_str("    IdentitiesOnly yes\n\n");
@@ -132,7 +134,7 @@ fn write_config_file(config: &str, config_file: &std::path::Path) -> Result<(), 
     Ok(())
 }
 
-fn check_base_config_needs_editing() -> bool{
+fn check_base_config_needs_editing() -> bool {
     use std::io::{BufRead, BufReader};
 
     let Some(base_config_path) = crate::constants::ssh_base_config_file_path() else {
@@ -149,26 +151,25 @@ fn check_base_config_needs_editing() -> bool{
 
     let reader = BufReader::new(file);
     let include_trimmed = include_line.trim();
-    
-    for line in reader.lines().take(20) {  // Only check first 20 lines
+
+    for line in reader.lines().take(20) {
+        // Only check first 20 lines
         if let Ok(line) = line {
             if line.contains(include_trimmed) {
                 return false; // Include line found, no editing needed
             }
         }
     }
-    
+
     true // Include line not found in first 20 lines
-} 
+}
 
 fn edit_base_config() -> Result<(), String> {
-    let base_config_path = crate::constants::ssh_base_config_file_path().ok_or_else(|| {
-        "Failed to determine SSH base config file path".to_string()
-    })?;
+    let base_config_path = crate::constants::ssh_base_config_file_path()
+        .ok_or_else(|| "Failed to determine SSH base config file path".to_string())?;
 
-    let include_line = crate::constants::ssh_base_include_line().ok_or_else(|| {
-        "Failed to determine SSH base config include line".to_string()
-    })?;
+    let include_line = crate::constants::ssh_base_include_line()
+        .ok_or_else(|| "Failed to determine SSH base config include line".to_string())?;
 
     let mut content = include_line.to_string();
     content.push_str("\n\n");
