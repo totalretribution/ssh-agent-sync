@@ -47,6 +47,7 @@ fn create_key_file(key: &mut SshKey, path: &std::path::Path) -> Result<(), Strin
         None => key.host.clone(),
     };
     key.file_name = sanitize_filename::sanitize(&key.file_name.replace(".", "_").replace(" ", "_"));
+    key.file_name.push_str(".pub");
     let file_path: std::path::PathBuf = path.join(&key.file_name);
 
     use std::fs::OpenOptions;
