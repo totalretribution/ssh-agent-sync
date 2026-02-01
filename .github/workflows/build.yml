@@ -1,6 +1,9 @@
-name: Release
+name: Build and Release ssh-agent-sync
 
 on:
+    push:
+        tags:
+            - 'v*.*.*'
     workflow_dispatch:
         inputs:
             tag:
