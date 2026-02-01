@@ -1,0 +1,82 @@
+name: Build and Publish Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache cargo registry and target
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+
+      - name: Build (release)
+        run: cargo build --release --bins
+
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p release
+          cp target/release/ssh-agent-sync target/release/ssh-agent-sync-gui release/ || true
+          tar -czf release/ssh-agent-sync-linux-${{ github.run_id }}.tar.gz -C release .
+          ls -la release
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release
+          Copy-Item target\release\ssh-agent-sync.exe release\ -ErrorAction SilentlyContinue
+          Copy-Item target\release\ssh-agent-sync-gui.exe release\ -ErrorAction SilentlyContinue
+          Compress-Archive -Path release\* -DestinationPath release\ssh-agent-sync-windows-${{ github.run_id }}.zip -Force
+          Get-ChildItem release
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ssh-agent-sync-${{ matrix.os }}
+          path: release/*
+
+  publish:
+    name: Create Release and Upload Assets
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release and upload assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
