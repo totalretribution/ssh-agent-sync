@@ -57,6 +57,10 @@ cargo build --release --bin ssh-agent-sync-gui
 
 The binaries will be located in the `target/release` directory.
 
+## See Also
+
+- [Using Bitwarden's SSH Agent with WSL](https://blog.jkwmoore.dev/bitwarden-desktop-client-as-ssh-agent-with-wsl.html) - A guide on how to link Bitwarden's SSH agent to WSL, which can be used in conjunction with this tool.
+
 ## License
 
 This project is licensed under the terms of the LICENSE file.
