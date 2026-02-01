@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug CLI (LLDB) - ssh-agent-sync",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/ssh-agent-sync.exe",
+            "args": ["--print", "--sync"],
+            "cwd": "${workspaceFolder}",
+            "terminal": "integratedTerminal",
+            "sourceLanguages": ["rust"],
+            "preLaunchTask": "cargo build cli"
+        },
+        {
+            "name": "Debug CLI (Windows - cppvsdbg) - ssh-agent-sync",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/ssh-agent-sync.exe",
+            "args": ["--print", "--sync"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "preLaunchTask": "cargo build cli"
+        },
+        {
+            "name": "Debug GUI (LLDB) - ssh-agent-sync-gui",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/ssh-agent-sync-gui.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "terminal": "integratedTerminal",
+            "sourceLanguages": ["rust"],
+            "preLaunchTask": "cargo build gui"
+        },
+        {
+            "name": "Debug GUI (Windows - cppvsdbg) - ssh-agent-sync-gui",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/ssh-agent-sync-gui.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "preLaunchTask": "cargo build gui"
+        }
+    ]
+}
