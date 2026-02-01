@@ -57,6 +57,31 @@ cargo build --release --bin ssh-agent-sync-gui
 
 The binaries will be located in the `target/release` directory.
 
+## Dependencies
+
+To build this project, you will need to have the Rust toolchain installed. You can install it from [rustup.rs](https://rustup.rs/).
+
+### Linux
+
+On Debian-based distributions, you will need to install the following packages:
+
+```bash
+sudo apt-get install -y \
+    pkg-config \
+    libglib2.0-dev \
+    libssh2-1-dev \
+    libdbus-1-dev \
+    libxkbcommon-dev \
+    libwayland-dev \
+    libx11-dev \
+    libgtk-3-dev \
+    libxdo-dev
+```
+
+### Windows
+
+For Windows, you will need the MSVC build tools, which can be installed with the Visual Studio Installer.
+
 ## See Also
 
 - [Using Bitwarden's SSH Agent with WSL](https://blog.jkwmoore.dev/bitwarden-desktop-client-as-ssh-agent-with-wsl.html) - A guide on how to link Bitwarden's SSH agent to WSL, which can be used in conjunction with this tool.
