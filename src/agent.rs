@@ -120,7 +120,9 @@ pub fn get_ssh_keys() -> anyhow::Result<Vec<SshKey>> {
 ///
 /// Borrows the provided slice of `SshKey` and prints each key on its own line.
 pub fn print_ssh_keys(keys: &[SshKey]) {
+    println!("ssh agent keys:");
     for key in keys {
         println!("{} {} {}@{}", key.key_type, key.key, key.user, key.host);
     }
+    println!("total keys: {}", keys.len());
 }

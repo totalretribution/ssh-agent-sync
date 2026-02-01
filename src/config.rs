@@ -65,13 +65,13 @@ fn create_key_file(key: &mut SshKey, path: &std::path::Path) -> Result<(), Strin
 
     let key_file_content = format!("{} {} {}@{}", key.key_type, key.key, key.user, key.host);
 
-    if cfg!(debug_assertions) {
-        println!(
-            "Creating key file at {} with content: {}",
-            file_path.display(),
-            key_file_content
-        );
-    }
+    // if cfg!(debug_assertions) {
+    //     println!(
+    //         "Creating key file {}",
+    //         file_path.display(),
+    //         key_file_content
+    //     );
+    // }
 
     file.write_all(key_file_content.as_bytes())
         .map_err(|e| format!("Failed to write to key file {}: {}", file_path.display(), e))?;
@@ -121,6 +121,7 @@ fn write_config_file(config: &str, config_file: &std::path::Path) -> Result<(), 
         )
     })?;
 
+    println!("Writing to ssh config file {}", config_file.display());
     file.write_all(config.as_bytes()).map_err(|e| {
         format!(
             "Failed to write to config file {}: {}",
@@ -132,6 +133,7 @@ fn write_config_file(config: &str, config_file: &std::path::Path) -> Result<(), 
 }
 
 fn check_base_config_needs_editing() -> bool {
+    println!("Checking if SSH base config needs editing");
     use std::io::{BufRead, BufReader};
 
     let Some(base_config_path) = crate::constants::ssh_base_config_file_path() else {
@@ -235,7 +237,7 @@ pub fn add_keys_to_config(keys: &mut Vec<SshKey>, force: bool) -> Result<(), Str
             return Err(e);
         }
         let config_entry = create_config_entry(key, &key_folder);
-        println!("Config entry for host {}:\n{}", key.host, config_entry);
+        // println!("Config entry for host {}:\n{}", key.host, config_entry);
         ssh_config.push_str(&config_entry);
     }
 

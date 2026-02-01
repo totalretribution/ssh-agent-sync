@@ -1,5 +1,9 @@
 use std::path::PathBuf;
 
+pub const PROGRAM_NAME: &str = "ssh-agent-sync";
+
+pub const PROGRAM_VERSION: &str = env!("CARGO_PKG_VERSION");
+
 /// Name of the SSH directory in the user's home folder.
 pub const SSH_DIR_NAME: &str = ".ssh";
 
