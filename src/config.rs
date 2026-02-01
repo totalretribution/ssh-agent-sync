@@ -3,9 +3,6 @@ use base64::engine::Engine;
 use sha2::{Digest, Sha256};
 extern crate sanitize_filename;
 
-#[cfg(unix)]
-use std::os::unix::fs::OpenOptionsExt;
-
 fn get_current_ssh_keys_crc() -> Option<String> {
     use std::fs;
 
