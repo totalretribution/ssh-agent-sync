@@ -4,6 +4,11 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g., v1.2.3). If empty, a tag will be inferred for tag pushes or a manual tag will be generated.'
+        required: false
 
 permissions:
   contents: write
@@ -74,9 +79,26 @@ jobs:
         with:
           path: artifacts
 
+      - name: Resolve tag name
+        id: get_tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ -n "${{ github.event.inputs.tag }}" ]; then
+              echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+            else
+              echo "tag=vmanual-${{ github.run_id }}" >> $GITHUB_OUTPUT
+            fi
+          else
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+            echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
       - name: Create GitHub Release and upload assets
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          name: ${{ steps.get_tag.outputs.tag }}
           files: artifacts/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
