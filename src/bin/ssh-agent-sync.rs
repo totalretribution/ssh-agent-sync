@@ -23,6 +23,7 @@ fn main() {
     let args = Args::parse();
     let mut keys = get_ssh_keys().unwrap_or_default();
 
+    println!("{}", "───────────────────────".bright_black());
     println!(" {} {}", crate::constants::PROGRAM_NAME.bold().blue(), format!("v{}", crate::constants::PROGRAM_VERSION).dimmed());
     println!("{}", "───────────────────────".bright_black());
 
@@ -37,6 +38,6 @@ fn main() {
         }
         println!("SSH keys synced to config successfully.");
     }
-    
+
     std::process::exit(0);
 }
