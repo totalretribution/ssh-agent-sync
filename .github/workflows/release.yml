@@ -39,8 +39,24 @@ jobs:
           toolchain: stable
           profile: minimal
 
+      - name: Install Linux system deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libglib2.0-dev
+
       - name: Build (release)
         run: cargo build --release --bins
+
+      - name: Setup vcpkg and install glib (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # Bootstrap vcpkg and install glib for MSVC x64
+          iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
+          . $HOME\.vcpkg\vcpkg-init.ps1
+          # Install glib for the x64-windows triplet (adjust if you use x64-windows-static, etc.)
+          & $env:VCPKG_ROOT\vcpkg.exe install glib:x64-windows
 
       - name: Package (Linux)
         if: runner.os == 'Linux'
