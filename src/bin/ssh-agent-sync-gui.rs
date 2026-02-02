@@ -19,6 +19,12 @@ use ssh_agent_sync::add_keys_to_config;
 use ssh_agent_sync::constants;
 use ssh_agent_sync::get_ssh_keys;
 
+use rust_embed::Embed;
+
+#[derive(Embed)]
+#[folder = "assets/"]
+struct Asset;
+
 struct SyncGuard {
     flag: Arc<AtomicBool>,
 }
@@ -49,7 +55,8 @@ enum UiCommand {
     PerformingSync(bool),
 }
 
-fn load_icon(path: &std::path::Path) -> tray_icon::Icon {
+#[allow(dead_code)]
+fn load_icon_from_path(path: &std::path::Path) -> tray_icon::Icon {
     let (icon_rgba, icon_width, icon_height) = {
         let image = image::open(path)
             .expect("Failed to open icon path")
@@ -59,6 +66,20 @@ fn load_icon(path: &std::path::Path) -> tray_icon::Icon {
         (rgba, width, height)
     };
     tray_icon::Icon::from_rgba(icon_rgba, icon_width, icon_height).expect("Failed to open icon")
+}
+
+#[allow(dead_code)]
+fn load_icon_embedded(name: &str) -> tray_icon::Icon {
+    let asset = Asset::get(name).expect("Failed to get embedded icon");
+
+    let image = image::load_from_memory(&asset.data)
+        .expect("Failed to decode embedded icon")
+        .into_rgba8();
+
+    let (width, height) = image.dimensions();
+    let rgba = image.into_raw();
+
+    tray_icon::Icon::from_rgba(rgba, width, height).expect("Failed to create tray icon")
 }
 
 fn sync_ssh(in_progress: &Arc<AtomicBool>, ui_tx: Option<&Sender<UiCommand>>) {
@@ -133,9 +154,9 @@ fn main() {
     let event_loop = EventLoop::builder().build().unwrap();
     let menu_channel = MenuEvent::receiver();
 
-    let icon_path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/icon.png");
-    let icon = load_icon(std::path::Path::new(&icon_path));
+    // let icon_path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/icon.png");
 
+    let icon = load_icon_embedded("icon.png");
     let _tray_icon = TrayIconBuilder::new()
         .with_menu(Box::new(tray_menu))
         .with_tooltip(crate::constants::PROGRAM_NAME)
@@ -175,7 +196,7 @@ fn main() {
             while let Ok(cmd) = self.ui_cmd_rx.try_recv() {
                 match cmd {
                     UiCommand::PerformingSync(enabled) => {
-                        let _ = self.check_now.set_enabled(enabled);
+                        let _ = self.check_now.set_enabled(!enabled);
                     }
                 }
             }
