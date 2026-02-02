@@ -123,7 +123,14 @@ sudo apt-get install -y \
 
 ### Windows
 
-For Windows, you will need the MSVC build tools, which can be installed with the Visual Studio Installer.
+
+For Windows, you will need the MSVC build tools. While the Visual Studio Installer can be used, it is often more reliable to install them using `winget` with the following command:
+
+```powershell
+winget install --id Microsoft.VisualStudio.2022.BuildTools --override "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.26100 --quiet --wait --norestart --nocache"
+```
+
+This method tends to work better than the official Rust installer for setting up the required build environment.
 
 ## See Also
 
