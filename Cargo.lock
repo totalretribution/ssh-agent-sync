@@ -2923,6 +2923,7 @@ dependencies = [
  "clap",
  "colored",
  "dirs",
+ "gtk",
  "image",
  "rust-embed",
  "sanitize-filename",

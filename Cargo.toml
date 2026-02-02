@@ -4,6 +4,9 @@ version = "0.1.1"
 edition = "2024"
 
 [dependencies]
+
+[target.'cfg(target_os = "linux")'.dependencies]
+gtk = "0.18.2"
 anyhow = "1.0.100"
 atomic = "0.6.1"
 auto-launch = "0.6.0"

@@ -20,6 +20,8 @@ use ssh_agent_sync::constants;
 use ssh_agent_sync::get_ssh_keys;
 
 use rust_embed::Embed;
+#[cfg(target_os = "linux")]
+use gtk;
 
 #[derive(Embed)]
 #[folder = "assets/"]
@@ -155,6 +157,13 @@ fn main() {
     let menu_channel = MenuEvent::receiver();
 
     // let icon_path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/icon.png");
+
+    #[cfg(target_os = "linux")]
+    {
+        if let Err(e) = gtk::init() {
+            eprintln!("Warning: failed to initialize GTK: {:?}", e);
+        }
+    }
 
     let icon = load_icon_embedded("icon.png");
     let _tray_icon = TrayIconBuilder::new()
